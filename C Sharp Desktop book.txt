@@ -1,0 +1,127 @@
+
+
+Os componentes considerados como os pilares do ADO.NET
+incluem os objetos:
+a) Connection , responsável por efetuar a conexão com o
+banco de dados; b) Command , responsável por executar comandos
+diretamente no banco de dados; c) DataAdapter , utilizado para
+preencher um objeto DataSet .
+
+
+Para criar banco usando o ADO.Net, vamos ao Service-based Database clicando na sessão data. que é um arquivo que representa uma base de dados. 
+É nesse arquivo que estarão os objetos criados e usados pela aplicação, como: tabelas, indexes, constraints, stored procedures, functions etc.
+
+connectionString é um atributo complexo, onde:
+Data Source é o servidor onde o banco de dados está. O valor (LocalDB)\v11.0 refere-se ao caminho no qual o servidor local de banco de dados está instalado
+AttachDbFileName refere-se, para o banco de dados local, ao caminho físico para o arquivo que representa a base de dados. Para obter o caminho físico do arquivo de
+base de dados, é preciso selecionar o arquivo na Solution Explorer e, então, na janela depropriedades, obter o valor de Full Path 
+Integrated Security define como a autenticação será utilizada na conexão. True , autenticação Windows. False , será necessário informar usuário e senha
+
+Existe um site referência em construir connections strings: http://www.connectionstrings.com
+
+Dê uma olhada depois
+
+<add name="CS_ADO_NET" connectionString="Data Source=(LocalDB)\v11.0;AttachDbFilename=D:\projetos\Microsoft Platforms\C Sharp Desktop\Solution 2\WindowsFormsApplication1\App_Data\ADO_NETDataBase.mdf;Integrated Security=True" providerName="System.Data.SqlClient" />
+
+Caso a classe ConfigurationManager apareça como desconhecida (ou inexistente) em seu código, adicione ao bloco de namespaces , no início do arquivo, a cláusula using
+System.Configuration . Se mesmo assim o problema persistir, é preciso adicionar ao seu projeto o acesso ao Assembly dessa classe.
+Para isso, na Solution Explorer , clique com o botão direito do mouse sobre References e depois em Add Reference
+
+DATASETS
+=============================================
+=============================================
+após a criação do DataSet, vá ao Server Explorer e conecte-se à base de dados a arraste suas tabelas para seu DataSet
+
+Cada tabela mapeada da base de dados para o DataSet é composta por dois componentes: um DataTable, que representa a estrutura de campos
+da tabela. E um TableAdapter encapsula nele a interação com a base de dados, para atualizar e obter dados. Este faz uso do SqlConnection e SqlCommand
+
+
+É possível criar novos método para carregar dados para um DataSet, basta abrir a janela do DataSet ir nos métodos do DataSet e clicar em Add Query. 
+Daí incluir um novo método com um novo SQL.
+
+Quando for copiar o DataSet para o form, também é possível copiá-lo para um combobox, por exemplo, ou outro componente que possua lista de informações, como list box, grid, etc ... trazendo um segundo ou até terceiro DataSet.
+
+
+Language INtegrated Query (LINQ) é uma tecnologia desenvolvida pela Microsoft para fornecer suporte ao nível de linguagem – com recursos oferecidos pelo ambiente – e a um
+mecanismo de consulta de dados, para qualquer que seja o tipo deste conjunto de dados, que podem ser matrizes, coleções, documentos XML ou base de dados.
+
+Em relação ao Windows Presentation Foundation (WPF), a Microsoft o aponta como “a próxima geração” de sistemas de apresentação para construção de aplicações clientes,
+que, visualmente, faz um uso extremo da experiência do usuário. Com o WPF, é possível fazer a construção de aplicações que funcionem tanto em ambientes desktop como em navegadores web.
+
+
+Uma solução WPF apresenta três arquivos principais:
+
+1) App.config, onde é possível incluir configurações para o projeto
+2) App.xaml, que define a aplicação WPF e todos os recursos utilizados por ela. Permite definir qual UI default, MainWindow.xaml
+3) MainWindow.xaml, arquivo da janela principal
+
+Dentro do App.xaml temos os resources, os resources são iniciados por uma instância do ResourceDictionary
+
+Já o Grid dentro do MainWindow, é um painel cujo layout organiza seus controles internos em uma estrutura tabular de linhas e colunas. Sua funcionalidade é similar a uma
+tabela HTML. É possível utilizar tanto LINQ quanto WPF
+
+
+Toda consulta LINQ possui três ações:
+
+1. Obtenção da fonte de dados;
+2. Criação da consulta;
+3. Execução da consulta.
+
+Conceitos Básicos sobre uma LINQ:
+---------------------------------
+Geralmente, a fonte de dados é organizada logicamente como uma sequência de elementos do mesmo tipo. Uma tabela de uma base de dados relacional contém uma sequência de linhas. 
+De maneira similar, um DataTable contém uma sequência de objetos DataRow . Em um arquivo XML existe uma sequência de elementos XML, organizados hierarquicamente em uma árvore.
+
+Do ponto de vista de uma aplicação C#, a fonte de dados é irrelevante uma vez que ela exerga sempre como uma coleção de IEnumerable<T> ou IQueryable<T>. Sendo assim para o LINQ, O XML é visível como um IEnumerable<XElement> ; o DataSet é como IEnumerable<DataRow> ; e o SQL é um IEnumerable ou IQueryable do tipo de dados dos objetos usados para representar os dados na tabela SQL.
+
+Uma expressão de consulta precisa começar com uma cláusula from , e terminar com um select ou a cláusula group. Entre a primeira e última cláusula da expressão, é possível utilizar uma ou
+mais cláusulas opcionais, como: where , orderby , join , let ou até mesmo cláusulas adicionais from . É possível também o uso da palavra-chave into , para permitir que o resultado de um join ou group sirva como fonte de dados para cláusulas adicionais de consulta, na mesma expressão.
+
+Semanticamente, as sintaxes baseadas em consulta e em métodos são idênticas, porém, muitas pessoas veem a sintaxe de consultas como mais simples e fáceis de ler. Entretanto, é preciso ter
+ciência de que algumas consultas precisam necessariamente ser escritas com chamadas a métodos. Um exemplo é a necessidade de recuperar a quantidade de elementos (objetos/registros) que
+correspondam a uma determinada condição.
+
+CLR (Common Langue Runtime)
+==================================
+É a máquina virtual do .Net, que execute os códigos que são compilados das linguagens como C# para CIL (Common Intermediate Language) que é similar ao bytecode do Java. O ambiente todo de execução, que seria obter esse código CIL (não compilá-lo) e rodar faz parte do CLI (Common Langua Infrastructure): https://en.wikipedia.org/wiki/Common_Language_Infrastructure
+
+
+Empressões Lambda
+======================================
+Tendo os dois código, baseado em consulta e em métodos:
+
+            var qtdeMaiores =
+            (from candidato in this.candidatos
+             where candidato.Idade >= 18
+             orderby candidato.Nome descending
+             select candidato).Count();
+
+OU
+
+			var queryMaioresPorMetodos = candidatos.Where(candidato => candidato.Idade >= 18).OrderBy(candidato => candidato.Nome);
+
+
+No exemplo apresentado anteriormente, verifique que a expressão condicional ( candidato.Idade >= 18 ) é passada como um argumento in-line , para o método Where() . Essa expressão
+in-line é chamada de expressão lambda, que é uma maneira conveniente para escrever código que poderia normalmente ser escrito de uma maneira mais trabalhosa, como por meio de métodos
+anônimos, de uma delegação genérica ou em uma expressão em árvores.
+
+Em C#, o símbolo => é o operador lambda, que é lido como “vai para”. A variável candidato , à esquerda do operador, é a variável de entrada, que corresponde à variável candidato na
+expressão de consulta. O compilador pode inferir o tipo de candidato pelo fato de ele saber que candidatos é um tipo genérico IEnumerable<T> . O corpo da expressão lambda é exatamente como a expressão na sintaxe de consulta, ou em outras expressões C#; ele pode incluir chamadas a métodos e outras lógicas complexas. O “valor de retorno” é o resultado fornecido pela
+expressão.
+
+Entity Framework (EF)
+É o ORM (Object Relational Mapping) da Microsoft, similar ao Hibernate.
+
+O EF utiliza o NuGet que é uma espécie de Maven. O NuGet irá instalar o EF NuGet Package. Para baixar o EF é preciso ir até o Manage NuGet Packages e ir no Browse e digiar por Entity Framework e instalar o pacote.
+
+Para usar o EntityFramework é preciso instanciar um contexto para acesso à base de dados.
+
+O EF possui três tipos de acesso à dados:
+Code First, o livro ensina o CodeFirst que é o que eu estava fazendo com o Java no JPA, baseado no código das clases o banco de dados é criado. Com base no model criado, o EF vai criar o banco.
+Model First
+Database First
+
+Entity Framework Code First Migration
+-------------------------------------
+é um recurso oferecido pelo EF para auxiliar nas atualizações realizadas em uma base de dados. Normalmente (e principalmente) quando se desenvolve uma aplicação, o modelo de negócio sofre alterações, e estas refletem na base de dados e na estrutura das tabelas quando utilizamos o EF.
+

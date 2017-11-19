@@ -1,0 +1,417 @@
+
+
+Ao criar uma Web Application, são criados os folders já certinho ... clicando no folder Controller podemos adicionar um controller.
+
+O interessante é que se clicarmos na Action com botão direito do mouse depois de tudo compilado (Ctrl + Shift + B) com botão direito, podemos criar um View
+o Visual Studio ajuda a criação e faz com uma geração de códigos Razor.
+
+RAZOR
+=====
+O ASP.NET Razor é uma view engine (ferramenta para geração de visões), que possibilita a inserção de lógica da aplicação nas visões. Sua sintaxe é simplificada e tem como base o C#.
+
+A declaração de @model no início da visão pode ser vista como uma analogia a declaração de um método e seus parâmetros. Ela habilita o intellisense a conhecer qual tipo de dados estamos
+usando quando o modelo for utilizado por HTML Helpers. Também verifica, em tempo de execução, se o tipo passado para a visão pode ser convertido para o tipo esperado.
+
+@Html.ActionLink("Create New", "Create") --> retorna uma âncora, o href para a action em específico, pode ser fixa como essa ou dinâmica como a de baixo:
+@Html.ActionLink("Edit", "Edit", new { id=item.CategoriaId })
+
+
+Na URL http://localhost:50827/Categorias/Index, temos:
+ - http , que representa o protocolo a ser utilizado;
+ - localhost:50827 , que são o servidor e porta de comunicação, respectivamente;
+ - Categorias , que representa o controlador que receberá a requisição;
+ - Index , que é a action que atenderá a requisição.
+
+ Dentro do App_Start é possível observar o RouteConfig, que é a classe que configura as rotas:
+
+             routes.MapRoute(
+                name: "Default",
+                url: "{controller}/{action}/{id}",
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+            );
+
+            onde:
+
+            "Default" é o nome da Rota
+            {controller}/{action}/{id} é a máscara da rota
+            terceiro parâmetro refere-se a valores que serão assumidos para o caso de ausência de valores na requisição.
+            Exemplo: http://localhost:50827 se essa for a requisição o controlador que irã assumir serã o Home
+            se requisitarmos http://localhost:50827/Categorias, a action será Index.
+            Se não for enviado o terceiro parâmetro não tem problema por que ele foi declarado como opcional.
+
+View Com Forms
+-------------------------------------
+- @using (Html.BeginForm()) {} Isso faz delimitarmos um form na view que terá como submissão uma action Index no método Post do http.
+
+- Html.AntiForgeryToken(). Da mesma maneira que estamos criando uma requisição HTTP fazendo uso do método POST , outros sites e aplicações também podem fazê-lo, inclusive direcionando suas requisições para nossas
+actions, o que, certamente, causaria um problema de segurança, conhecido como Cross Site Request Forgery.
+
+- Html.ValidationSummary(). Renderiza uma lista de mensagens de erro.
+
+- Html.LabelFor() Renderiza um label e é possível utiliar expressão lambda
+
+- Html.EditorFor() Renderiza um inputBox
+
+- Html.ValidationMessageFor() Renderiza a mensagem de erro específica para o controle representado pela expressão lambda
+
+- Html.HiddenFor() Este helper renderiza um elemento HTML <input type="hidden"> para a propriedade retornada pela expressão lambda. É muito comum o uso deste helper para que valores
+possam ser passados da visão para o controlador
+
+LINQ ─ LANGUAGE INTEGRATED QUERY LINQ é uma tecnologia desenvolvida pela Microsoft para fornecer suporte, em nível de linguagem (com recursos oferecidos pelo ambiente), a um mecanismo de consulta de dados para qualquer que seja o tipo deste conjunto de dados, podendo ser matrizes e coleções, documentos XML e base de dados. Existem diversos recursos na web que permitirão uma
+introdução ao LINQ, mas recomendo a MSDN (https://msdn.microsoft.com/pt-br/library/bb397906.aspx).
+
+Associando uma implementação com Entity Framework no modelo Code First:
+-----------------------------------------------------------------------
+- Crie seus models
+- Crie seu próprio contexto DbContext extendendo o DbContext, implementando o contrutor para chamar sua string de conexão.
+- Além disso, cada models que ela irã gerenciar deve ser criada como atributo usando  DbSet<Entidade Model>
+
+A string de conexão no atributo base do construtor deve ser referenciada no Web.config em appsetting, deferente da forma do outro livro que é o App.config por que essa é uma aplicação web e queremos que o IIS contextualize o acesso e é através desse arquivo que ele o faz.
+
+
+DbSet - Propriedades da classe DbSet representam entidades ( Entity ) que são utilizadas para as operações CRUD
+
+Connection String - Normalmente, a conexão é para uma base de dados, mas também pode ser usada para uma planilha eletrônica ou um arquivo de texto, dentre outros.
+-------------------  Dentro do elemento <connectionString> , há um elemento <add> que adiciona uma nova connectionString.
+	 - name - nome da conexão, como Asp_Net_MVC_CS
+	 - connectionString - um atributo em que:
+	 		Data Source - é o servidor onde o banco de dados está
+	 			(localdb)\MSSQLLocalDB refere-se ao banco local instalado junto com o Visual Studio
+	 		AttachDbFileName - refere-se ao caminho físico para o arquivo que representa a base de dados. No exemplo, o|DataDirectory| refere-se à pasta App_Data do projeto.
+	 		Integrated Security - True , assume-se a autenticação Windows. False , será necessário informar o nome de usuário e senha.
+	 		providerName - o nome do Data Provider responsável por realizar a conexão com a base de dados.
+	 		MultipleActiveResultSets - permite a execução de múltiplos lotes de instrução em uma única conexão
+mais em http://www.connectionstrings.com
+
+HttpStatusCodeResult(HttpStatusCode.BadRequest) - A classe HttpStatusCodeResult fornece uma maneira de retornar um ActionResult com uma descrição e código de status de uma resposta HTTP
+HttpNotFound() - O método HttpNotFound() , que pertence ao controlador, retorna uma instância da classe HttpNotFoundResult . Este erro é equivalente ao status HTTP 404 e é interessante que a aplicação possua uma página para indicar o erro ao usuário.
+
+
+Bootstrap
+=========
+Baixando o Bootstrap pelo NuGet ele adiciona as fonts, scritps e content com os fontes do bootstrap.
+
+O bootstrap possui um sistema de grades, dividindo a tela linha e colunas (12 colunas, de 1 a 12). Página 60 do livro possui uma imagem mostrando as classes:
+col-xs-* - celulares
+col-sm-* - tablets
+col-md-* - desktop
+col-lg-* - desktop alta resolução
+o * troca pelos números de grade do bootstrap
+
+Layouts: O padrão ASP.NET MVC diz que os arquivos de layout devem ficar dentro de uma pasta chamada Shared , dentro da pasta Views.
+
+Quando queremos criar um layout, que pode ser requisitado via navegador, devemos iniciar seu nome com _. Páginas iniciando com _, pelo padrão do Asp.Net, nao podem ser invocadas pelo navegador
+
+Viewport: é a área visível para o usuário de uma página web. Ela varia de acordo com o dispositivo usado.
+@ViewBag.Title:  representa o título que aparece na barra de títulos do navegador e que pode ser definido em cada visão que utilizar o layout.
+.container: dentro do body temos um DIV que possui a classe container, o bootstrap precisa de containers para colocar seu sistema de grid
+.row: a classe row define uma linha que poderá ter 12 colunas. Para dividir bem a tela para acomodar os componentes, pense sempre em múltiplos de 12.
+page-header: define um estilo específico para o cabeçalho da página
+bg-danger: background, define a cor de fundo
+text-danger: define a cor do texto
+col-xs-3 e col-md-3 define que a linha terá três colunas, lembrando que XS atende para celulares e md para desktops.
+
+Para a definição do menu, fazemos uso das classes nav , nav-pills e nav-stacked para formatar uma lista não ordenada (tag <ul> ). Observe que na tag <li> , responsável
+pelo link Home , há a definição da classe active , que dará um visual diferenciado para esta opção
+
+@RenderBody renderiza a visão em questão, para maiores detalhes: https://www.codeproject.com/Articles/383145/RenderBody-RenderPage-and-RenderSection-methods-in
+
+@Url.Content() , que converte um caminho relativo (ou virtual) para um caminho absoluto na aplicação. Utilizado na inclusão de arquivos javascritp, jquery ou do próprio bootstrap
+
+Como inserir um layout ? Nas tags Razor
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+LAYOUTS BOOTSTRAP ?: https://wrapbootstrap.com/theme/awesome-admin-WB0663265
+
+jQuery DataTables (https://www.datatables.net/): DataTables é um plugin para o jQuery, e uma ferramenta que traz enormes ganhos para listagens em forma de tabelas.
+Baixar o Jquery Datatables pelo NuGet.
+
+O uso do Datatable do jQuery traz alguns comportamentos padrão, como classificação pela primeira coluna, exibir quantidade de registros, paginação e o controle dessa paginação, além de um search e a opção de navegação entre as páginas, tudo isso já vem pronto.
+
+TAGs do Bootstrap:
+------------------
+ - form-horizontal, que define que as tags que ela contém devem ser inseridas de maneira horizontal;
+ - form-group, que registra em seu interior um grupo de elementos do formulário.
+ - control-label e form-control , que formatam os controles que serão renderizados com os CSSs do Bootstrap.
+ - col-md-offset-2, que deixa em branco duas colunas da linha Bootstrap (lembre-se de que cada linha pode ter no máximo 12 colunas).
+ - input-group, permite um efeito visual diferente, como se tivéssemos um controle dividido em dois. Na primeira parte, temos um <span> , com a classe input-group-addon e, dentro deste , temos um elemento <i> , com as classes glyphicon e glyphicon-user . Ao usarmos estas classes, teremos renderizada uma figura dentro do <span>. O link http://getbootstrap.com/components/#glyphicons-glyphs traz o conjunto de figuras disponíveis para este uso.
+
+ 
+
+
+LINKS SOBRE O BOOTSTRAP
+-----------------------
+ - Uma relação completa dos componentes disponibilizados pelo Bootstrap pode ser obtida em http://getbootstrap.com/components/. 
+ - Informações sobre as classes de CSS, incluindo o sistema de grade (grid system) podem ser verificadas em http://getbootstrap.com/css/. 
+ - Já exemplos do sistema de grades podem ser vistos em https://getbootstrap.com/examples/grid/.
+
+A view de delete utilizamos o TempData para mostrar a mensagem que o Fabricante X foi removido.
+TEMPDATA
+---------
+O TempData é um recurso útil quando se deseja armazenar um valor em uma curta sessão de tempo, entre requisições. A princípio, cria-se uma chave e armazena-se nela um valor. Este
+estará disponível até que ele seja recuperado. No momento de recuperação deste valor, ele deixa de existir e retornará nulo em um novo processo de recuperação.
+Em nosso exemplo, criamos a chave Message , e nela armazenamos um valor. Este será recuperado na visão que renderiza os dados do Fabricante a ser removido, como pode
+ser visto na listagem a seguir (visão Index ). 
+http://www.codeproject.com/Articles/476967/What-is-ViewData-ViewBag-and-TempData-MVC-Option
+http://eduardopires.net.br/2013/06/asp-net-mvc-viewdataviewbag-tempdata/
+
+                <!--
+                <ul class="nav nav-pills nav-stacked">
+                    <li role="presentation" class="active"><a href="#">Home</a></li>
+                    <li role="presentation">
+                        @Html.ActionLink("Categorias", "Index", "Categorias")
+                    </li>
+                    <li role="presentation">
+                        @Html.ActionLink("Fabricantes", "Index", "Fabricantes")
+                    </li>
+                </ul>
+                -->
+                <ul class="nav nav-pills nav-stacked">
+                    <li id="liHome" role="presentation" class="active"><a href="#">Home</a></li>
+                    <li id="liCategorias" role="presentation">
+                        @Html.ActionLink("Categorias", "Index", "Categorias")
+                    </li>
+                    <li id="liFabricantes" role="presentation">
+                        @Html.ActionLink("Fabricantes", "Index", "Fabricantes")
+                    </li>
+                </ul>
+Com o código acima, o Home sempre estava em destaque, agora temos a view acionada em destaque, para isso atribuímos um Id para a view
+
+Ainda tem uma outra implementação que faz uso do jQuery e que retira o Active do elemento
+
+RECOMENDAÇÕES DE LEITURA
+-------------------------
+Algumas leituras adicionais são sempre bem-vindas. Desta maneira, seguem algumas recomendações. 
+Sobre design responsivo: 
+	https://responsivedesign.is/ 
+	http://www.casadocodigo.com.br/products/livro-web-designresponsivo.
+Sobre Bootstrap para ASP.NET MVC, recomendo:
+	https://www.packtpub.com/webdevelopment/bootstrap-aspnet-mvc.
+Como é importante o conhecimento, mesmo que básico de HTML, CSS e JavaScript, recomendo para HTML e CSS o livro:
+	http://www.casadocodigo.com.br/products/livro-html-css
+para JavaScript:
+	http://www.casadocodigo.com.br/products/livro-programacao
+jQuery: 
+	http://www.casadocodigo.com.br/products/livro-javascriptjquery
+
+
+
+No relacionamento de Entidades, quando temos Produto com Categoria e Fabricante, o livro conta que também pode ser útil ter o Id
+separado e isso é considerado OK, por conta do Lazy loading, com o Lazy loading só teremos acesso a informação da Categoria
+mesmo que seu Id no caso ela seja carregada. Eu me pergunto por que deveríamos expor o Id, a que fim ? Com isso sou a favor 
+de não usar o ID até que ele sea realmente necessário.
+
+Para fazer listagem de Produtos, usamos elementos virtual que possibilidade sobrescrita. Isso é necessário para o EF, para que ele possa fazer o Lazy Load, por meio
+do padrão Proxy.
+
+
+SELECTLIST()
+O método SelectList() representa uma lista de itens da qual o usuário pode selecionar um item. Em nosso caso, os itens serão expostos em um DropDownList . O método possui diversos construtores, mas o usado no código anterior recebe:
+	1. A coleção de itens que popularão o DropDownList ;
+	2. A propriedade que representa o valor que será armazenado no controle;
+	3. A propriedade que possui o valor a ser exibido pelo controle.
+
+
+Não sou fã de colocar um objeto associado e também uma propriedade (atributo) para a chave estrangeira, mas além das dificuldades de interagir com o Dropdownlist
+fui convencido ao ver o padrão no livro do Fowler para fazer isso:
+	Padrão Foreign Key Mapping (página 236 no livro do Fowler)
+
+
+
+o uso de caixas de diálogo modal do Bootstrap
+=============================================
+Verifique
+na <div> que representa o rodapé do panel a existência de um <ahref> . Neste elemento, estão definidos dois atributos: 
+datatoggle -> especifica para o Bootstrap que o link gerará uma janela "modal".
+data-target -> indica qual é a <div> que contém o modal a ser exibido.
+
+
+Partial View
+============
+Partial Views são visões que contêm código (HTML e/ou Razor) e são projetadas para serem renderizadas como parte de uma visão. Elas não possuem layouts, como as visões, e podem ser "inseridas" dentro de diversas visões, como se fosse um componente ou controle. 
+Recomendo a leitura do artigo Work with Partial view in MVC framework, em http://www.codeproject.com/Articles/821330/Work-with-Partial-view-in-MVC-framework.
+
+Links Recomendados:
+===================
+
+carregamento de objetos pelo Entity Framework, para maiores detalhes, veja os links:
+	https://msdn.microsoft.com/en-us/data/jj574232.aspx
+	http://www.codeproject.com/Articles/788559/Loading-Related-Entities-with-Entity-Framework-A-B
+
+inicialização do Entity Framework, recomendo a leitura do artigo Various Strategies to Initialize Database in Entity Framework, de Sourav Kayal
+	http://www.codeproject.com/Articles/794187/Various-Strategies-to-Initialize-Database-in-Entit
+
+O uso de ViewBag tem também um excelente exemplo no artigo What is ViewData, ViewBag and TempData? – MVC Options for Passing Data Between Current and Subsequent
+Request, de Monjurul Habib
+	http://www.codeproject.com/Articles/476967/What-is-ViewData-ViewBag-and-TempData-MVC-Option
+
+
+
+Capítulo 5 do Livro
+--------------------
+--------------------
+Separando em camadas
+====================================
+Aplicação 	- projeto web
+Serviço		- projeto serviços
+Modelo 		- projeto model
+Persistência- projeto persistencia
+
+Foi dividio o projeto dessa forma, assim a aplicação consegue o Model que é importante e a camada services, mas ela não conhece nada do banco de dados propriamente dito, estã tudo em persistencia;.
+
+Capítulo 6, Code First Migration
+--------------------------------
+É preciso habilitar o Code First Migrations, Para isso, selecione o menu Tools>Nuget Package Manager>Package Manager Console no projeto de persistência.
+
+digite: Enable-Migrations
+
+é preciso lembrar que isso deve ser feito no projeto que contém as conexões com banco. Após a instalação do Code First Migration no projeto, uma
+pasta chamada Migrations é inserida com dois arquivos: um com um número grande, terminando com _InitialCreate e outro, chamado Configuration:
+- O primeiro traz o código que mapeia a atual estrutura de sua base de dados, com base na classe EFContext .
+- O segundo é responsável pela configuração pertinente ao Migrations.
+
+No Configuration é preciso hudar AutomaticMigrationsEnabled para true, a fim de habilitar o Code First Migrations, além disso é preciso mudar o do construtor do EFContext:
+Database.SetInitializer<EFContext>(new MigrateDatabaseToLatestVersion<EFContext, Configuration>());
+Garanta que o Configuration seja apostado para o Configuratins que está dentro da pasta Migrations, que acabamos de alterar com o true.
+
+
+Usando Data Annotations:
+------------------------
+É preciso adicionar System.ComponentModel.DataAnnotations no ad references do projeto do Model
+
+O uso de partial view é muito útil para economizar código. São porções de código HTML que podem ser enxertados em qualquer parte de um código.
+
+Veja o exemplo de Produtos, create e edit. Ambos possuem uma chamada para uma partial view que anteriomente eram códigos idênticos HTML.
+
+
+Fazendo uso do JQueryUI para controles de Data
+----------------------------------------------
+Com o tal o JQuery UI construir as interfaces gráficas amazing é muito fácil, eles possuem vários controle bem legais.
+
+Preciso aprender a construir UI da hora. Com usso do bootstrap + JQuery UI + JQuery é nóis na fita. É só perder um tempo para fazer.
+
+O livro mostra como usar o date picker, no geral precisamos sempre atrelar o J-Query-UI component com o um  ID e atribuir esse ID
+para o componente que queremos exibir, o componente de data server de exemplo
+
+https://github.com/jquery/jquery-ui/tree/master/ui/i18n, além disso podemos fazer interncionalização do componente.
+nesse site j-query-ui no git hub podemos baixar em várias linguas inclusive em português: datepicker-pt-BR.js
+
+Na hora de colocar o estilo, o livro recomendou:
+
+    @section styles {
+        <link href="~/Scripts/jquery-ui-1.12.1/jquery-ui.css" rel="stylesheet" />
+    }
+    mas eu não usei esse section styles, nem sei se iusso deveria ser utilizado.
+
+    apenas usei o <link
+
+É possível fazer uso do componente HTML5 de data apenas (ref. pag 171). É possível fazer uso dos recursos do HTML 5 para campos do tipo Data . Para isso, coloque o atributo [DataType(DataType.Date)] antes da propriedade DataCadastro , comente o script que habilita o DateTimePicker , e execute novamente sua aplicação. A figura a seguir apresenta este novo visual. E já vem internacionalizado.
+
+Validação do Lado do Cliente.
+-------------------------------
+Como estamos sempre rodando a partir do Visual Studio não percebemos isso, pois o web.config é configurado automaticamente pelo VS. Para ter certeza que isso irá rolar sempre, veja o web.config:
+
+	<appSettings>
+		<add key="webpages:Version" value="3.0.0.0" />
+		<add key="webpages:Enabled" value="false" />
+		<add key="ClientValidationEnabled" value="true" />
+		<add key="UnobtrusiveJavaScriptEnabled" value="true" />
+	</appSettings>
+
+	Além disso, garanta que o layout ou entao alguma outra página tenha importado os scripts validadores:
+
+    <script src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
+
+
+Capítulo 7: Areas
+Servem para melhorar organização da aplicação. Um aplicação pequena OK, mas uma grande teria dificuldade de organizar, por exemplo, os controladores.
+As areas funcionam como módulo no projeto.
+
+As Areas podem ser criadas no Solution Explorer clicando em Add.
+As Areas afetam a URL de acesso da aplicação.
+
+Autenticação e Autorização
+==========================
+==========================
+O OWIN (Open Web Interface for .NET) é uma especificação de código aberto que descreve uma camada de abstração entre os servidores web e componentes de aplicação. Para implementar a
+segurança em uma aplicação ASP.NET MVC, é oferecido o framework ASP.NET Identity. O ASP.NET Identity pode ser visto como um componente distribuído como um middleware do
+OWIN.
+
+O ASP.NET Identity precisa de banco para criação de roles, etc.... acho que também podemos usar aqui tanto o Auth0 quanto o Storm. Vamos testar ?
+
+Usaremos o Package Manage Explorer, o mesmo que foi utilizado para habilitar o Migrations. Garanta que o projeto padrão seja a aplicação Web (no PM tem um combo box que podemos selecionar isso), e digite as três instruções na sequência.
+	Install-Package Microsoft.AspNet.Identity.EntityFramework
+	Install-Package Microsoft.AspNet.Identity.OWIN
+	Install-Package Microsoft.Owin.Host.SystemWeb
+
+
+Autenticação
+é preciso configurar uma <appSettings> em seu Web.Config
+	<add key="owin:AppStartup" value="WebApplication1.IdentityConfig" />
+além disso, precisamos de uma string de conexão para armazenar os dados de autenticação.
+	<add name="IdentityDb" providerName="System.Data.SqlClient" connectionString="Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\IdentityDB.mdf;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False;MultipleActiveResultSets=True"/>
+
+
+	O ASP.NET Identity oferece uma classe chamada IdentityUser. Extendendo-a, podemos trabalhar.
+
+	O correto seria criar um projeto todo separada para lidar com segurança. Para gerenciar os usuários, o ASP.NET Identity dispõe da classe UserManager
+
+	
+	O OWIN surgiu independentemente do ASP.NET e tem suas próprias convenções. Uma delas é a existência de uma classe que é instanciada para carregar e configurar o middleware, e executar qualquer outro trabalho de configuração que é necessário. Por padrão, essa classe é chamada Start , e é definida no namespace global.
+
+	Ela contém um método chamado Configuration , que é chamado pela infraestrutura do OWIN e passa uma implementação da interface Owin.IAppBuilder , suportando a configuração do middleware que uma aplicação requer. A classe de início é geralmente definida como uma classe parcial, com os seus outros arquivos de classe dedicados a cada tipo de middleware que
+está sendo usado. Como optei por registrar a classe de inicialização no Web.Config , e a inseri na pasta App_Start , essaa implementação toda é dispensada. 
+
+
+A interface IAppBuilder é suportada por um certo número de métodos de extensão definidos em classes no namespace Owin. O método UseCookieAuthentication() diz ao ASP.NET Identity como usar um cookie para identificar usuários autenticados, onde as opções são especificadas por meio da classe CookieAuthenticationOption
+
+Tive um problema ao acessar o Securety Admin.
+
+LEMBRE-SE
+---------
+Como não especifiquei nada manualmente, a URL tem o nome do Controller / o nome do método. Ela espera por um view dentro de Views, pasta de mesmo nome do Controller (sem controller no final obviamente)
+
+Para criar os usuários, teremos uma classe que é diference, estará no model, mas só será útil para a Visão, é chamada de Model View. Provavelmente indroduz um pouco de MVVM
+
+
+Autorização: Para fazer com que as actions sejam com base em autorização basta colocar a anotação [Authorize] na chamada do método da action.
+
+
+verificar produtos que não está criando mais, :(
+
+Páginas de Erro:
+Um erro padrão é o 404,
+gerado pelo HttpNotFound() . Há diversos templates para página deste erro. Na internet, há vários templates gratuitos, e um deles é o 
+
+	https://www.freshdesignweb.com/free-404-error-page-template/
+
+Existem várias técnicas de manipulação de erros, o livro adota a captura global.
+
+A primeira etapa é implementarmos, no arquivo Global.asax , a lógica para captura do erro disparado e definir uma action para gerar a visão relativa ao erro. O código a ser
+inserido deve ser feito no método Application_Error(). É criado um objeto RouteData que vai compor a URL a ser requisitada após a determinação de qual tipo de erro ocorreu.
+Verifica-se qual erro HTTP que foi disparado para a atribuição do nome da action ao RouteData
+
+Lá colocamos o route para o ErrorsController, que irá direcionar para as visões apropriadas. Note nas visões a recuperação da exceção armazenada na Session
+
+
+Capítulo 9 carrinho de compras
+==============================
+Existem algumas técnicas que podem ser aplicadas para isso. Uma delas é a aplicação fornecer uma listagem de produtos, com possibilidade de pesquisa. E por meio desta listagem,
+adicionar o item desejado ao seu carrinho de compras e, ao final, visualizar seu carrinho e informar seus dados para cobrança e recebimento dos itens adquiridos. A questão é como armazenar os itens desejados entre uma pesquisa de produtos e outra. Persistir na base de dados? Mas e se o cliente desistir da compra apenas fechando o navegador? Os dados ficarão persistidos e precisarão depois serem eliminados. Uma boa técnica para isso é o armazenamento dos dados em uma variável de sessão, que pode ter seu tempo de vida definido pela aplicação
+
+Session é uma das possibilidades oferecidas pelo ASP.NET MVC para gerenciamento de estados. Uma aplicação visualiza uma sessão por cada cliente conectado a ela. E quando falo
+em cliente aqui, me refiro a navegadores. Desta maneira, cada navegador poderá ter uma sessão diferente com a aplicação e ter seus dados de sessão compartilhados entre requisições. É importante não haver um exagero no uso de sessões. Uma discussão sobre gerenciamento de estados pode ser verificada em 
+http://www.codeproject.com/Articles/808839/State-Management-in-ASP-NET.
+
+
+
+
+
+
+
+
+256
+9.5 O QUE FALTA PARA TERMINAR O CARRINHO?
